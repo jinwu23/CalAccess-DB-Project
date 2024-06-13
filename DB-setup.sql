@@ -23,7 +23,7 @@ CREATE TABLE Persons (
 CREATE TABLE Lobbyists (
     FilerId INT,
     PersonId INT,
-    EthicsCourseCompleted DATE,
+    EthicsCourseCompleted VARCHAR(200),
     PRIMARY KEY (FilerId),
     FOREIGN KEY (FilerId) REFERENCES Filer(FilerId)
 );
@@ -39,8 +39,11 @@ CREATE TABLE Organizations (
 CREATE TABLE LobbyingFirms (
     FilerId INT,
     FirmName VARCHAR(255),
-    FirmAddress VARCHAR(255),
-    DateRegistered DATE,
+    FirmCity VARCHAR(255),
+    FirmState VARCHAR(4),
+    FirmZip VARCHAR(10),
+    FirmAddress VARCHAR(455),
+    DateRegistered VARCHAR(200),
     PRIMARY KEY (FilerId),
     FOREIGN KEY (FilerId) REFERENCES Filer(FilerId)
 );
@@ -69,8 +72,8 @@ CREATE TABLE Bills (
 CREATE TABLE HireFirm (
     OrgId INT,
     FirmId INT,
-    StartDate DATE,
-    EndDate DATE,
+    StartDate VARCHAR(200),
+    EndDate VARCHAR(200),
     FOREIGN KEY (OrgId) REFERENCES Filer(FilerId),
     FOREIGN KEY (FirmId) REFERENCES Filer(FilerId)
 );
