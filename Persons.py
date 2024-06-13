@@ -20,7 +20,7 @@ load_dotenv()
 connection = db_connect(os.getenv('CALACCESSDB'))
 cursor = connection.cursor()
 
-# get all filers
+# get all persons
 persons = []
 cursor.execute("""
                SELECT DISTINCT FILER_ID, NAML, NAMF, NAMT, NAMS
@@ -43,48 +43,47 @@ for person in db_persons:
 cursor.close()
 connection.close()
 
-# Connect to DDDB to check for persons in the Persons table
-connection = db_connect(os.getenv('DDDB'))
-cursor = connection.cursor()
-
-# Try to match into DDDB to get pid
-for person in persons:
-    select_query = """
-                   SELECT distinct pid
-                   FROM Person
-                   WHERE first = %s AND last = %s AND suffix = %s
-                   """
-    cursor.execute(select_query, (person.FirstName, person.LastName, person.Suffix))
-    result = cursor.fetchone()
-    
-    if result:
-        person.PersonId = result[0]
-
-persons = [person for person in persons if person.PersonId != 0]
-print("Person count: ", len(persons))
-
-cursor.close()
-connection.close()
-
-# # inset filerIds into db
-# connection = db_connect(os.getenv('DEVDB'))
+# # Connect to DDDB to check for persons in the Persons table
+# connection = db_connect(os.getenv('DDDB'))
 # cursor = connection.cursor()
+# # Try to match into DDDB to get pid
+# for person in persons:
+#     select_query = """
+#                    SELECT distinct pid
+#                    FROM Person
+#                    WHERE first = %s AND last = %s AND suffix = %s
+#                    """
+#     cursor.execute(select_query, (person.FirstName, person.LastName, person.Suffix))
+#     result = cursor.fetchone()
+    
+#     if result:
+#         person.PersonId = result[0]
 
-# insert_query =  """
-#                 INSERT INTO Filer (FilerId)
-#                 VALUES (%s)
-#                 """
-
-# data_to_insert = [
-#     (filerId,)
-#     for filerId in filerIds
-# ]
-
-# batch_size = 1000
-# for i in range(0, len(data_to_insert), batch_size):
-#     batch_data = data_to_insert[i:i + batch_size]
-#     cursor.executemany(insert_query, batch_data)
-#     connection.commit()
+# persons = [person for person in persons if person.PersonId != 0]
+# print("Person count: ", len(persons))
 
 # cursor.close()
 # connection.close()
+
+# insert Persons into db
+connection = db_connect(os.getenv('DEVDB'))
+cursor = connection.cursor()
+
+insert_query =  """
+                INSERT IGNORE INTO Persons (FilerId, PersonId, FirstName, LastName, Suffix, Prefix)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """
+
+data_to_insert = [
+    (person.FilerId, person.PersonId, person.FirstName, person.LastName, person.Suffix, person.Prefix)
+    for person in persons
+]
+
+batch_size = 1000
+for i in range(0, len(data_to_insert), batch_size):
+    batch_data = data_to_insert[i:i + batch_size]
+    cursor.executemany(insert_query, batch_data)
+    connection.commit()
+
+cursor.close()
+connection.close()
