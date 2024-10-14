@@ -1,0 +1,20 @@
+Logical Database Design
+Filer(FilerId)
+Persons(FilerId, PersonId, FirstName, LastName, MiddleName, Suffix, Prefix)
+Attributes FilerId are a foreign key referencing table Filers
+Lobbyists(FilerId, PersonId, EthicsCourseCompleted)
+Attributes FilerId are a foreign key referencing table Filers
+Organizations(FilerId, OrgName, OrgType)
+Attributes FilerId are a foreign key referencing table Filers
+LobbyingFirms(FilerId, FirmName, FirmCity, FirmState, FirmZip, FirmAddress, DateRegistered)
+Attributes FilerId are a foreign key referencing table Filers
+Bills(BillId, BillState, BillSessionType)
+HireFirm(OrgId, FirmId, StartDate, EndDate)
+Attributes OrgId, FirmId, are foreign keys referencing table Filers
+OrgHireLobbyist(OrgId, LobbyistId, StartDate, EndDate, DisclosureForm)
+Attributes OrgId, LobbyistId, are foreign keys referencing table Filers
+FirmHireLobbyist(FirmId, LobbyistId, StartDate, EndDate, DisclosureForm)
+Attributes FirmId, LobbyistId, are foreign keys referencing table Filers
+InfluenceBill(OrgId, FirmId, BillId, Stance, StartDate, EndDate)
+Attributes OrgId, FirmId, are foreign keys referencing table Filers
+Attributes BillId are foreign key referencing Bills
